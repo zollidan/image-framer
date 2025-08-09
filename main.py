@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from PIL import Image
 
-# Импортируем наши модули
+
 from . import models, schemas
 from .database import SessionLocal, engine
 
@@ -24,8 +24,6 @@ Path("templates").mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# --- Логика работы с БД (без изменений) ---
-
 
 def get_db():
     db = SessionLocal()
@@ -34,20 +32,17 @@ def get_db():
     finally:
         db.close()
 
-# --- РОУТ для отображения HTML-интерфейса (без изменений) ---
-
 
 @app.get("/")
 def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# --- ОБНОВЛЕННЫЙ JSON-ЭНДПОИНТ для обработки ---
 @app.post("/process-json/", response_model=schemas.ImageResponse)
 def process_image_json(
     db: Session = Depends(get_db),
     file: UploadFile = File(...),
-    frame_name: str = "frame.png"  # <-- ИЗМЕНЕНИЕ: Файл рамки по умолчанию
+    frame_name: str = "frame.png"
 ):
     """
     Принимает файл, растягивает рамку под его размер и возвращает JSON.
@@ -60,7 +55,6 @@ def process_image_json(
         )
 
     try:
-        # --- ИЗМЕНЕНА ЛОГИКА ОБРАБОТКИ ---
 
         # 1. Открываем оба изображения
         frame_image = Image.open(frame_path).convert("RGBA")
@@ -77,8 +71,6 @@ def process_image_json(
 
         # 5. Сверху накладываем растянутую рамку, используя ее альфа-канал как маску
         combined.paste(frame_image, (0, 0), mask=frame_image)
-
-        # --- КОНЕЦ ИЗМЕНЕНИЙ В ЛОГИКЕ ---
 
         final_image = combined.convert("RGB")
 
