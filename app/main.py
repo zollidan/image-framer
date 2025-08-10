@@ -1,6 +1,7 @@
 # main.py
 import uuid
 from pathlib import Path
+import boto3
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -10,11 +11,17 @@ from PIL import Image
 
 
 from . import models, schemas
-from .database import SessionLocal, engine
+from .database import get_db, engine
+from .s3 import S3BucketService, s3_bucket_service_factory
+from .config import settings
+from .routers.s3Handler import router
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="InstaRetro App")
+
+# --- Routers
+app.include_router(router)
 
 # --- Настройка статических файлов и шаблонов ---
 Path("static/processed").mkdir(parents=True, exist_ok=True)
@@ -23,14 +30,6 @@ Path("templates").mkdir(exist_ok=True)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.get("/")

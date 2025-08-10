@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# minio
+minio_data
+.env
+sql_app.db
