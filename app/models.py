@@ -2,6 +2,7 @@
 from sqlalchemy import Column, Integer, String
 from .database import Base
 
+
 class ProcessedImage(Base):
     __tablename__ = "processed_images"
 

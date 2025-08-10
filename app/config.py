@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     MAX_FILE_SIZE: int = 10 * 1024 * 1024
     ALLOWED_TYPES: list[str] = ["image/jpeg", "image/png", "application/pdf"]
+    S3_PUBLIC_URL: str = "/s3/file"
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(
             os.path.abspath(__file__)), "..", ".env")

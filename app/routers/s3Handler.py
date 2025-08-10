@@ -1,9 +1,8 @@
-import datetime
 import os
 from typing import Annotated
 import uuid
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status, Response
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi import APIRouter, File, UploadFile, status
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from ..s3 import s3_bucket_service_factory
 from ..config import settings
@@ -15,7 +14,7 @@ s3 = s3_bucket_service_factory(settings)
 
 
 @router.get("/s3/list")
-def get_list_objects():
+def get_list_objects() -> list[str]:
     return s3.list_objects()
 
 
