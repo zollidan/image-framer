@@ -1,9 +1,12 @@
-import "./App.css";
-
+import { FrameGenerator } from "./components/FrameGenerator";
+import { Header } from "./components/header";
 function App() {
   return (
     <>
-      <h1>image frame generator</h1>
+      <div className="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
+        <Header />
+        <FrameGenerator />
+      </div>
     </>
   );
 }
