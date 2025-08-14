@@ -13,12 +13,12 @@ router = APIRouter()
 s3 = s3_bucket_service_factory(settings)
 
 
-@router.get("/s3/list")
+@router.get("/list")
 def get_list_objects() -> list[str]:
     return s3.list_objects()
 
 
-@router.get("/s3/file/{file_key}")
+@router.get("/file/{file_key}")
 async def get_file_by_key(file_key: str):
 
     try:
@@ -35,7 +35,7 @@ async def get_file_by_key(file_key: str):
         )
 
 
-@router.post("/s3/upload", status_code=status.HTTP_201_CREATED)
+@router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_file(file: Annotated[UploadFile, File()]) -> dict:
 
     try:

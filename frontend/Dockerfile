@@ -1,14 +1,11 @@
-FROM oven/bun:1-slim
-
+FROM oven/bun:latest
 
 WORKDIR /code_frontend
 
-COPY . ./code_frontend
+COPY . /code_frontend
 
-RUN bun install
+RUN bun install --frozen-lockfile
+RUN bun add serve
+RUN bun run build
 
-COPY . .
-
-EXPOSE 5173
-
-CMD ["bun", "run", "dev", "--host"]
+EXPOSE 3000

@@ -1,7 +1,7 @@
 services:
-  api:
+  app:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     command:
       [
@@ -16,22 +16,9 @@ services:
         "0.0.0.0",
       ]
     ports:
-      - "8000:80"
+      - "80:80"
     env_file:
-      - ./backend/.env
-    volumes:
-      - ./backend:/code
-
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5173:80"
-  #   env_file:
-  #     - ./frontend/.env
-  #   volumes:
-  #     - ./frontend:/code_frontend
+      - ./.env.prod
 
   minio:
     image: minio/minio
@@ -41,5 +28,5 @@ services:
     volumes:
       - ./minio_data:/data
     env_file:
-      - ./backend/.env
+      - ./.env
     command: server /data --console-address ":9001"

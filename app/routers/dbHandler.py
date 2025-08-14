@@ -12,7 +12,7 @@ from ..models import ProcessedImage
 router = APIRouter()
 
 
-@router.get("/files/list")
+@router.get("/list")
 async def get_db_image_files(
     db: Session = Depends(get_db)
 ):

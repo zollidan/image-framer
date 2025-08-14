@@ -19,7 +19,7 @@ router = APIRouter()
 s3 = s3_bucket_service_factory(settings)
 
 
-@router.post("/edit/add-white-bg/", response_model=schemas.ImageResponse)
+@router.post("/add-white-bg/", response_model=schemas.ImageResponse)
 def process_add_white_bg(
     db: Session = Depends(get_db),
     file: UploadFile = File(...),
@@ -90,7 +90,7 @@ def process_add_white_bg(
         )
 
 
-@router.post("/edit/add-frame/", response_model=schemas.ImageResponse)
+@router.post("/add-frame/", response_model=schemas.ImageResponse)
 def process_add_frame(
     db: Session = Depends(get_db),
     file: UploadFile = File(...),

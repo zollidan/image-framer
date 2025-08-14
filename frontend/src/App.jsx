@@ -1,4 +1,4 @@
-import { FrameGenerator } from "./components/FrameGenerator";
+import { FrameGenerator } from "./components/frameGenerator";
 import { WhiteBgGenerator } from "./components/whiteBgGenerator";
 import { Header } from "./components/header";
 import { Routes, Route } from "react-router";
@@ -10,6 +10,7 @@ function App() {
         <Routes>
           <Route path="/" element={<FrameGenerator />} />
           <Route path="/white-bg" element={<WhiteBgGenerator />} />
+          {/* <Route path="/images" element={<FilesList />} /> */}
         </Routes>
       </div>
     </>
