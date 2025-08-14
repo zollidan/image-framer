@@ -1,4 +1,38 @@
 services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command:
+      [
+        "uv",
+        "run",
+        "fastapi",
+        "run",
+        "app/main.py",
+        "--port",
+        "80",
+        "--host",
+        "0.0.0.0",
+      ]
+    ports:
+      - "8000:80"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/code
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5173:80"
+  #   env_file:
+  #     - ./frontend/.env
+  #   volumes:
+  #     - ./frontend:/code_frontend
+
   minio:
     image: minio/minio
     ports:
@@ -6,7 +40,6 @@ services:
       - "9001:9001"
     volumes:
       - ./minio_data:/data
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+    env_file:
+      - ./backend/.env
     command: server /data --console-address ":9001"
