@@ -19,8 +19,79 @@ router = APIRouter()
 s3 = s3_bucket_service_factory(settings)
 
 
+@router.post("/edit/add-white-bg/", response_model=schemas.ImageResponse)
+def process_add_white_bg(
+    db: Session = Depends(get_db),
+    file: UploadFile = File(...),
+    bg_coefficient: float = 1.3
+):
+    """
+    Принимает файл изображения, накладывает его на белый фон
+    и возвращает URL обработанного изображения.
+    """
+
+    try:
+        # 1. Чтение файла и получение размеров из size: tuple[int, int]
+        contents = file.file.read()
+        user_image = Image.open(io.BytesIO(contents)).convert("RGBA")
+        original_width, original_height = user_image.size
+
+        # 2. Вычесление новых размеров для фона.
+        new_width = int(original_width * bg_coefficient)
+        new_height = int(original_height * bg_coefficient)
+
+        # 3. Создание фонового изображения
+        background = Image.new("RGBA", (new_width, new_height), "WHITE")
+
+        # 4. Вычесление новых кардинат на вставку в центр белого фона
+        paste_x = (new_width - original_width) // 2
+        paste_y = (new_height - original_height) // 2
+
+        # 5. Наложение по центру на белый фон
+        background.paste(user_image, (paste_x, paste_y), user_image)
+
+        # 6. Финальное конвертирование
+        final_image = background.convert("RGB")
+
+        unique_id = uuid.uuid4()
+        saved_filename = f"{unique_id}.jpg"
+
+        img_byte_arr = io.BytesIO()
+
+        final_image.save(img_byte_arr, format='JPEG')
+
+        img_byte_arr = img_byte_arr.getvalue()
+
+        result_url = f"{settings.S3_PUBLIC_URL}/{saved_filename}"
+
+        s3.upload_object(saved_filename, img_byte_arr)
+
+        db_image = models.ProcessedImage(
+            original_filename=file.filename,
+            processed_url=result_url
+        )
+        db.add(db_image)
+        db.commit()
+        db.refresh(db_image)
+
+        return {"filename": file.filename, "url": result_url}
+
+    except Image.DecompressionBombError:
+        # Обработка ошибки, если изображение слишком большое
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Image size is too large."
+        )
+    except Exception as e:
+        # Обработка других возможных ошибок при обработке
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": f"An error occurred during processing: {e}"}
+        )
+
+
 @router.post("/edit/add-frame/", response_model=schemas.ImageResponse)
-def process_image_json(
+def process_add_frame(
     db: Session = Depends(get_db),
     file: UploadFile = File(...),
     frame_name: str = "frame.png"

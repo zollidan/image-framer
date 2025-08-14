@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const FrameGenerator = () => {
+export const WhiteBgGenerator = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState("Файл не выбран");
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +37,7 @@ export const FrameGenerator = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/edit/add-frame/`,
+        `${import.meta.env.VITE_API_URL}/edit/add-white-bg/`,
         {
           method: "POST",
           body: formData,
@@ -65,10 +65,9 @@ export const FrameGenerator = () => {
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 max-w-md w-full border border-white/20">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-            Создатель рамки
+            Создатель белого фона
           </h1>
         </div>
-
         {error && (
           <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-center">
             {error}
