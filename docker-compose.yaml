@@ -9,7 +9,7 @@ services:
         "run",
         "fastapi",
         "run",
-        "app/main.py",
+        "main.py",
         "--port",
         "80",
         "--host",
@@ -18,15 +18,4 @@ services:
     ports:
       - "80:80"
     env_file:
-      - ./.env.prod
-
-  minio:
-    image: minio/minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    # volumes:
-    #   - ./minio_data:/data
-    env_file:
-      - ./.env
-    command: server /data --console-address ":9001"
+      - .env
