@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - BUCKET_NAME
+      - ENDPOINT
+      - ACCESS_KEY
+      - SECRET_KEY
+    expose:
+      - "80:80"
