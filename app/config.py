@@ -8,8 +8,6 @@ class Settings(BaseSettings):
     ACCESS_KEY: str
     SECRET_KEY: str
     MAX_FILE_SIZE: int = 10 * 1024 * 1024
-    MINIO_ROOT_USER: str
-    MINIO_ROOT_PASSWORD: str
     ALLOWED_TYPES: list[str] = ["image/jpeg", "image/png", "application/pdf"]
     ORIGINS: list[str] = [
         "http://localhost:5173",
