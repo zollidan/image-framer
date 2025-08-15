@@ -11,10 +11,8 @@ services:
       - "fastapi"
       - "run"
       - "app/main.py"
-      - "--port"
-      - "80"
       - "--host"
       - "0.0.0.0"
 
     ports:
-      - "8000:80"
+      - "80:8000"

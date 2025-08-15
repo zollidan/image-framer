@@ -20,3 +20,4 @@ COPY --from=frontend-builder /code_frontend/dist ./static
 
 RUN uv sync --frozen --no-cache
 
+EXPOSE 8000
