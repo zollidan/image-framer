@@ -1,6 +1,7 @@
 # main.py
 import os
 from pathlib import Path
+from app.s3 import s3_bucket_service_factory
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -15,6 +16,9 @@ from .routers import editHandler
 from .routers import dbHandler
 
 models.Base.metadata.create_all(bind=engine)
+
+s3 = s3_bucket_service_factory(settings)
+s3.create_bucket()
 
 # --- Настройка статических файлов и шаблонов ---
 Path("static/assets").mkdir(parents=True, exist_ok=True)

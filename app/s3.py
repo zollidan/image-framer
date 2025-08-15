@@ -28,6 +28,13 @@ class S3BucketService:
         )
         return client
 
+    def create_bucket(self):
+        try:
+            client = self.create_s3_client()
+            client.create_bucket(Bucket=self.bucket_name)
+        except Exception as e:
+            return e
+
     def get_object_by_key(self, file_key):
         client = self.create_s3_client()
 
