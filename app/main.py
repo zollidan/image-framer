@@ -17,9 +17,6 @@ from .routers import dbHandler
 
 models.Base.metadata.create_all(bind=engine)
 
-s3 = s3_bucket_service_factory(settings)
-s3.create_bucket()
-
 # --- Настройка статических файлов и шаблонов ---
 Path("static/assets").mkdir(parents=True, exist_ok=True)
 Path("frames").mkdir(exist_ok=True)
