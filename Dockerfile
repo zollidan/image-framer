@@ -22,4 +22,4 @@ RUN uv sync --frozen --no-cache
 
 EXPOSE 80
 
-CMD [ "uv", "run", "fastapi", "run", "main.py", "--port", "80", "--host", "0.0.0.0"]
+CMD [ "uv", "run", "fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]
