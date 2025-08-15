@@ -11,11 +11,8 @@ class Settings(BaseSettings):
     ALLOWED_TYPES: list[str] = ["image/jpeg", "image/png", "application/pdf"]
     ORIGINS: list[str] = [
         "http://localhost:5173",
-        "http://localhost:4173",
         "http://localhost:80",
-        "http://localhost",
-        "http://app",
-        "https://app"
+        "http://localhost:8000"
     ]
     S3_PUBLIC_URL: str = "/s3/file"
 
