@@ -21,3 +21,5 @@ COPY --from=frontend-builder /code_frontend/dist ./static
 RUN uv sync --frozen --no-cache
 
 EXPOSE 8000
+
+CMD [ "uv", "run", "fastapi", "run", "app/main.py", "--host", "0.0.0.0"]
