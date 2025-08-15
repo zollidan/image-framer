@@ -8,5 +8,5 @@ services:
       - ENDPOINT
       - ACCESS_KEY
       - SECRET_KEY
-    expose:
+    ports:
       - "80:80"
