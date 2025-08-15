@@ -3,22 +3,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: fastapi-app
+
     command:
-      [
-        "uv",
-        "run",
-        "fastapi",
-        "run",
-        "app/main.py",
-        "--port",
-        "80",
-        "--host",
-        "0.0.0.0",
-      ]
-    environment:
-      - BUCKET_NAME
-      - ENDPOINT
-      - ACCESS_KEY
-      - SECRET_KEY
+      - "uv"
+      - "run"
+      - "fastapi"
+      - "run"
+      - "app/main.py"
+      - "--port"
+      - "80"
+      - "--host"
+      - "0.0.0.0"
+
     ports:
-      - "80:80"
+      - "8000:80"
