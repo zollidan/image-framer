@@ -9,6 +9,9 @@ export const Header = () => {
           <li>
             <a href="/white-bg">Белый фон</a>
           </li>
+          <li>
+            <a href="/images">Галерея</a>
+          </li>
         </ul>
       </nav>
     </header>

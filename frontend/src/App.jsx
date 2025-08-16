@@ -1,6 +1,9 @@
 import { FrameGenerator } from "./components/frameGenerator";
 import { WhiteBgGenerator } from "./components/whiteBgGenerator";
+import { FilesList } from "./components/filesList";
 import { Header } from "./components/header";
+import { Footer } from "./components/footer";
+
 import { Routes, Route } from "react-router";
 function App() {
   return (
@@ -10,8 +13,9 @@ function App() {
         <Routes>
           <Route path="/" element={<FrameGenerator />} />
           <Route path="/white-bg" element={<WhiteBgGenerator />} />
-          {/* <Route path="/images" element={<FilesList />} /> */}
+          <Route path="/images" element={<FilesList />} />
         </Routes>
+        <Footer />
       </div>
     </>
   );
