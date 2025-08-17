@@ -35,8 +35,15 @@ async def get_file_by_key(file_key: str):
         )
 
 
+from ..database import get_db
+from ..models import ProcessedImage
+from sqlalchemy.orm import Session
+
+
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
-async def upload_file(file: Annotated[UploadFile, File()]) -> dict:
+async def upload_file(
+    file: Annotated[UploadFile, File()], db: Session = Depends(get_db)
+) -> dict:
 
     try:
 
@@ -63,21 +70,30 @@ async def upload_file(file: Annotated[UploadFile, File()]) -> dict:
 
         s3.upload_object(unique_filename, file_content)
 
-        return JSONResponse(content=SuccessResponse(
-            message="File uploaded successfully",
-            data={
-                "original_filename": file.filename,
-                "s3_filename": unique_filename,
-                "size": len(file_content),
-                "content_type": file.content_type,
-            }
-        ).model_dump())
+        db_image = ProcessedImage(
+            original_filename=file.filename, s3_filename=unique_filename
+        )
+        db.add(db_image)
+        db.commit()
+        db.refresh(db_image)
+
+        return JSONResponse(
+            content=SuccessResponse(
+                message="File uploaded successfully",
+                data={
+                    "original_filename": file.filename,
+                    "s3_filename": unique_filename,
+                    "size": len(file_content),
+                    "content_type": file.content_type,
+                },
+            ).model_dump()
+        )
 
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=ErrorResponse(
-                message="Error uploading file!", details=str(e))
+                message="Error uploading file!", details=str(e)),
         )
     finally:
         await file.close()

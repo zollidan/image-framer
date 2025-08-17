@@ -12,8 +12,8 @@ from . import models
 from .config import settings
 from .database import engine
 from .routers import s3Handler
-from .routers import editHandler
 from .routers import dbHandler
+from .routers import images
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -35,8 +35,8 @@ app.mount(
 
 # --- Routers
 app.include_router(s3Handler.router, prefix="/s3")
-app.include_router(editHandler.router, prefix="/edit")
 app.include_router(dbHandler.router, prefix="/files")
+app.include_router(images.router, prefix="/images", tags=["images"])
 
 app.add_middleware(
     CORSMiddleware,

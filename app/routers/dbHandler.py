@@ -17,7 +17,7 @@ async def get_db_image_files(
     db: Session = Depends(get_db)
 ):
     try:
-        files = db.scalars(select(ProcessedImage)).all()
+        files = db.scalars(select(ProcessedImage).order_by(ProcessedImage.order)).all()
         return files
     except SQLAlchemyError as e:
         return JSONResponse(
