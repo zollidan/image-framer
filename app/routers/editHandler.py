@@ -128,7 +128,6 @@ def process_add_frame(
 
         unique_id = uuid.uuid4()
         saved_filename = f"{unique_id}.jpg"
-        save_path = Path("static/processed") / saved_filename
 
         # создается баффер
         img_byte_arr = io.BytesIO()

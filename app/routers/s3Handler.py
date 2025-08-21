@@ -12,7 +12,6 @@ router = APIRouter()
 
 s3 = s3_bucket_service_factory(settings)
 
-
 @router.get("/list")
 def get_list_objects() -> list[str]:
     return s3.list_objects()
