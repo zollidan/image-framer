@@ -2,7 +2,7 @@ import { Header } from "@/components/header/header";
 import { Footer } from "@/components/footer/footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { EditWhiteBg } from "@/components/edit-white-bg";
+import { EditWhiteBg } from "@/components/edit-white/edit-white-bg";
 import { EditAddFrameBg } from "@/components/edit-add-framer";
 import { ImageList } from "@/components/image-list";
 
