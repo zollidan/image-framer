@@ -22,7 +22,7 @@ s3 = s3_bucket_service_factory(settings)
 # --- Настройка статических файлов и шаблонов ---
 Path("frames").mkdir(exist_ok=True)
 
-app = FastAPI(title="alice.com API")
+app = FastAPI(title="alice.com API", docs_url="/docs", redoc_url=None, openapi_url="/api/openapi.json")
 
 # --- Routers
 app.include_router(s3Handler.router, prefix="/s3")
