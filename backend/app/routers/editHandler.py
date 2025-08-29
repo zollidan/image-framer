@@ -166,6 +166,10 @@ def process_add_frame(
             combined.info['icc_profile'] = original_icc_profile
 
         unique_id = uuid.uuid4()
+<<<<<<< HEAD:app/routers/editHandler.py
+=======
+        saved_filename = f"{unique_id}.jpg"
+>>>>>>> dev:backend/app/routers/editHandler.py
 
         # 7. Определяем формат сохранения с приоритетом на lossless
         if original_format.upper() in ['PNG', 'WEBP', 'GIF']:
