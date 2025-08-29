@@ -3,10 +3,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    BUCKET_NAME: str
-    ENDPOINT: str
-    ACCESS_KEY: str
-    SECRET_KEY: str
+    BUCKET_NAME: str = ""
+    ENDPOINT: str = ""
+    ACCESS_KEY: str = ""
+    SECRET_KEY: str = ""
     MAX_FILE_SIZE: int = 10 * 1024 * 1024
     ALLOWED_TYPES: list[str] = ["image/jpeg", "image/png", "application/pdf"]
     ORIGINS: list[str] = [
