@@ -19,7 +19,13 @@ models.Base.metadata.create_all(bind=engine)
 # --- Настройка статических файлов и шаблонов ---
 Path("frames").mkdir(exist_ok=True)
 
-app = FastAPI(title="alice.com API", docs_url="/docs", redoc_url=None, openapi_url="/api/openapi.json")
+app = FastAPI(
+    title="alice.com API",   
+    root_path="/api",                
+    root_path_in_servers=True,        
+    docs_url="/docs",                 
+    redoc_url="/redoc",             
+    openapi_url="/openapi.json",  )
 
 # --- Routers
 app.include_router(s3Handler.router, prefix="/s3")
