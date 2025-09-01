@@ -1,18 +1,8 @@
-version: "3.8"
-
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.backend
-    environment:
-      - PYTHONUNBUFFERED=1
+    image: cr.yandex/${REGISTER_ID}/image-framer-backend:latest
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.frontend
+    image: cr.yandex/${REGISTER_ID}/image-framer-frontend:latest
     ports:
       - "80:80"
-    depends_on:
-      - backend

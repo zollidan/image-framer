@@ -1,0 +1,16 @@
+services:
+  backend:
+    image: cr.yandex/${REGISTER_ID}/image-framer-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    image: cr.yandex/${REGISTER_ID}/image-framer-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
