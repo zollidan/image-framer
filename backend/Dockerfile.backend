@@ -9,6 +9,9 @@ COPY . /code
 
 RUN uv sync --frozen --no-cache
 
+# Default to production configuration inside the container.
+ENV ENV=production
+
 EXPOSE 8000
 
 ENTRYPOINT [ "uv", "run", "fastapi", "run", "app/main.py", "--host", "0.0.0.0"]
