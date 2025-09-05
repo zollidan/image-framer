@@ -2,12 +2,27 @@ import { useEffect, useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 
+/**
+ * Represents a processed image record.
+ *
+ * @property {string} processed_url - The URL of the processed image.
+ * @property {number} id - The unique identifier of the image record.
+ * @property {string} original_filename - The original filename of the image.
+ */
 interface Image {
   processed_url: string;
   id: number;
   original_filename: string;
 }
 
+/**
+ * A component that fetches and displays a list of processed images.
+ *
+ * It handles loading and error states, and renders a list of links
+ * to the processed images.
+ *
+ * @returns {JSX.Element} The rendered ImageList component.
+ */
 export const ImageList = () => {
   const [data, setData] = useState<Image[]>([]);
   const [loading, setLoading] = useState(true);

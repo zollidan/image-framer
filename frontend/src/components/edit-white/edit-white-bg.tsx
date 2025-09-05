@@ -14,11 +14,26 @@ import { useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 
+/**
+ * Represents an image with its filename and URL.
+ *
+ * @property {string} filename - The original filename of the image.
+ * @property {string} url - The URL of the processed image.
+ */
 interface Image {
   filename: string;
   url: string;
 }
 
+/**
+ * A component for adding a white background to an image.
+ *
+ * This component provides a UI with a file input, a slider to adjust the
+ * background size, and handles the API call to process the image. It also
+ * displays the processed image or an error message.
+ *
+ * @returns {JSX.Element} The rendered EditWhiteBg component.
+ */
 export const EditWhiteBg = () => {
   const [sliderValue, setSliderValue] = useState<number[]>([1.3]);
   const [image, setImage] = useState<Image | null>(null);

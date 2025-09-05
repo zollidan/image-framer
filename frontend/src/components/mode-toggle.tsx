@@ -2,6 +2,13 @@ import { Moon, Sun, SunMoon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 
+/**
+ * A component that provides a button to toggle the color theme.
+ *
+ * It cycles through "light", "dark", and "system" themes.
+ *
+ * @returns {JSX.Element} The rendered ModeToggle component.
+ */
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
 
