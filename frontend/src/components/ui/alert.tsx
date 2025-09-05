@@ -19,6 +19,12 @@ const alertVariants = cva(
   }
 )
 
+/**
+ * A component that displays a callout for user attention.
+ *
+ * @param {React.ComponentProps<"div"> & VariantProps<typeof alertVariants>} props - The props for the component.
+ * @returns {JSX.Element} The rendered Alert component.
+ */
 function Alert({
   className,
   variant,
@@ -34,6 +40,12 @@ function Alert({
   )
 }
 
+/**
+ * A component for the title of an Alert.
+ *
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The rendered AlertTitle component.
+ */
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -47,6 +59,12 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * A component for the description of an Alert.
+ *
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The rendered AlertDescription component.
+ */
 function AlertDescription({
   className,
   ...props

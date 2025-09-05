@@ -35,6 +35,12 @@ const buttonVariants = cva(
   }
 )
 
+/**
+ * A component that displays a button or a link.
+ *
+ * @param {React.ComponentProps<"button"> & VariantProps<typeof buttonVariants> & { asChild?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The rendered Button component.
+ */
 function Button({
   className,
   variant,

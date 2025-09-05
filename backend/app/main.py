@@ -1,4 +1,10 @@
 # main.py
+"""
+Main application file for the FastAPI backend.
+
+This file initializes the FastAPI application, sets up CORS middleware,
+and includes the routers for different API endpoints.
+"""
 import os
 from pathlib import Path
 from app.s3 import s3_bucket_service_factory

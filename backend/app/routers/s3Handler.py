@@ -1,3 +1,9 @@
+"""
+API router for S3 bucket operations.
+
+This module defines endpoints for listing objects, retrieving an object by key,
+and uploading files to the S3 bucket.
+"""
 import os
 from typing import Annotated
 import uuid
@@ -14,12 +20,27 @@ s3 = s3_bucket_service_factory(settings)
 
 @router.get("/list")
 def get_list_objects() -> list[str]:
+    """
+    Retrieves a list of all object keys from the S3 bucket.
+
+    Returns:
+        list[str]: A list of object keys.
+    """
     return s3.list_objects()
 
 
 @router.get("/file/{file_key}")
 async def get_file_by_key(file_key: str):
+    """
+    Retrieves a file from the S3 bucket by its key.
 
+    Args:
+        file_key (str): The key of the file to retrieve.
+
+    Returns:
+        StreamingResponse: The file content as a streaming response.
+        JSONResponse: An error response if the file cannot be retrieved.
+    """
     try:
         file = s3.get_object_by_key(file_key)
 
@@ -36,7 +57,17 @@ async def get_file_by_key(file_key: str):
 
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_file(file: Annotated[UploadFile, File()]) -> dict:
+    """
+    Uploads a file to the S3 bucket.
 
+    The file size and content type are validated against the application settings.
+
+    Args:
+        file (UploadFile): The file to upload.
+
+    Returns:
+        JSONResponse: A success or error response.
+    """
     try:
 
         file_content = await file.read()

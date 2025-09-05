@@ -3,6 +3,12 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A set of layered sections of content, known as tab panels, that are displayed one at a time.
+ *
+ * @param {React.ComponentProps<typeof TabsPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The rendered Tabs component.
+ */
 function Tabs({
   className,
   ...props
@@ -16,6 +22,12 @@ function Tabs({
   )
 }
 
+/**
+ * A list of tab triggers.
+ *
+ * @param {React.ComponentProps<typeof TabsPrimitive.List>} props - The props for the component.
+ * @returns {JSX.Element} The rendered TabsList component.
+ */
 function TabsList({
   className,
   ...props
@@ -32,6 +44,12 @@ function TabsList({
   )
 }
 
+/**
+ * A button that activates a tab panel.
+ *
+ * @param {React.ComponentProps<typeof TabsPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The rendered TabsTrigger component.
+ */
 function TabsTrigger({
   className,
   ...props
@@ -48,6 +66,12 @@ function TabsTrigger({
   )
 }
 
+/**
+ * The content of a tab panel.
+ *
+ * @param {React.ComponentProps<typeof TabsPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The rendered TabsContent component.
+ */
 function TabsContent({
   className,
   ...props

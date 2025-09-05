@@ -1,180 +1,209 @@
 # Image Framer
 
-Проект предоставляет простой бэкенд на FastAPI для обработки изображений: добавление рамок и наложение на белый фон. Репозиторий также содержит фронтенд для взаимодействия с API.
+Image Framer is a web application that allows you to apply simple edits to your images, such as adding a white background or a decorative frame. It features a Python FastAPI backend for image processing and a React frontend for user interaction.
 
-## Разработка
+## Features
 
-### Локальный запуск бэкенда
+- **Add White Background**: Place any image onto a clean white background, with adjustable padding.
+- **Add Frame**: Overlay a decorative frame onto your images (work in progress).
+- **S3 Integration**: Processed images are stored in an S3-compatible object storage.
+- **Database Tracking**: Information about processed images is stored in a SQLite database.
 
-```bash
-cd backend
-uv run fastapi run app/main.py --host 0.0.0.0
-```
+## Tech Stack
 
-### Тесты
+- **Backend**:
+  - Python 3.11
+  - FastAPI
+  - SQLAlchemy
+  - Pillow (PIL)
+  - Uvicorn
+- **Frontend**:
+  - React
+  - TypeScript
+  - Vite
+  - Tailwind CSS
+  - shadcn/ui
+- **Database**:
+  - SQLite
+- **Deployment**:
+  - Docker & Docker Compose
+  - Nginx
+  - Let's Encrypt (for SSL)
+
+---
+
+## Local Development
+
+To run the application on your local machine, you need to have Python and Node.js installed.
+
+### Backend
+
+1.  **Navigate to the backend directory:**
+    ```bash
+    cd backend
+    ```
+
+2.  **Install dependencies:**
+    This project uses `uv` for package management.
+    ```bash
+    pip install uv
+    uv sync
+    ```
+
+3.  **Create a `.env` file:**
+    Create a `.env` file in the `backend/` directory and add the following environment variables for your S3-compatible storage:
+    ```
+    BUCKET_NAME=your-bucket-name
+    ENDPOINT=https://your-s3-endpoint.com
+    ACCESS_KEY=your-access-key
+    SECRET_KEY=your-secret-key
+    ```
+
+4.  **Run the backend server:**
+    ```bash
+    uv run fastapi run app/main.py --host 0.0.0.0
+    ```
+    The backend API will be available at `http://localhost:8000`.
+
+### Frontend
+
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd frontend
+    ```
+
+2.  **Install dependencies:**
+    This project uses `bun` for package management.
+    ```bash
+    npm install -g bun
+    bun install
+    ```
+
+3.  **Create a `.env` file:**
+    Create a `.env` file in the `frontend/` directory and add the following environment variable to point to your backend API:
+    ```
+    VITE_API_URL=http://localhost:8000
+    ```
+
+4.  **Run the frontend development server:**
+    ```bash
+    bun run dev
+    ```
+    The frontend will be available at `http://localhost:5173`.
+
+---
+
+## Testing
+
+To run the backend tests, navigate to the `backend/` directory and run the following command:
 
 ```bash
 cd backend
 uv run pytest
 ```
 
-### CI
-
-В репозитории присутствует GitHub Actions workflow, который запускает тесты. Запуск производится вручную через интерфейс GitHub.
-
 ---
 
-## Развертывание на продакшене
+## Deployment
 
-### Предварительные требования
+The repository includes a comprehensive setup for deploying the application to a production environment using Docker.
 
-- Ubuntu 20.04+ сервер с публичным IP
-- Доменное имя, направленное на IP сервера
-- Yandex Container Registry ID
+### Prerequisites
 
-### 1. Подготовка сервера
+- An Ubuntu 20.04+ server with a public IP address.
+- A domain name pointing to the server's IP.
+- A Yandex Container Registry ID (or any other container registry).
 
-Склонируйте репозиторий на сервер:
+### 1. Prepare the Server
+
+Clone the repository onto your server:
 
 ```bash
 git clone https://github.com/zollidan/image-framer.git
 cd image-framer
 ```
 
-### 2. Установка зависимостей
+### 2. Set Up Environment Variables
 
-Скрипт установит Docker, Docker Compose и настроит SSL сертификаты:
+Export the following environment variables:
+
+```bash
+export MY_DOMAIN="your-domain.com"
+export REGISTER_ID="your-yandex-registry-id"
+```
+
+### 3. Run the Setup Script
+
+The `setup.sh` script automates the installation of Docker, Docker Compose, and obtains SSL certificates from Let's Encrypt.
 
 ```bash
 chmod +x setup.sh
-```
-
-### 3. Настройка переменных окружения
-
-```bash
-export MY_DOMAIN="your-domain.com"           # Ваш домен
-export REGISTER_ID="your-yandex-registry-id"  # ID в Yandex Container Registry
-```
-
-### 4. Запуск установки
-
-```bash
 ./setup.sh
 ```
 
-Скрипт выполнит:
+The script will:
+- Update the system.
+- Install Docker and Docker Compose.
+- Obtain Let's Encrypt SSL certificates.
+- Configure Nginx with SSL termination.
+- Start all services using `docker-compose`.
 
-- Обновление системы
-- Установку Docker и Docker Compose
-- Получение SSL сертификатов Let's Encrypt
-- Настройку nginx с SSL терминацией
-- Запуск всех сервисов
+### 4. Verify the Deployment
 
-### 5. Проверка развертывания
-
-После успешного запуска проверьте:
+After the script finishes, you can check the status of the running containers:
 
 ```bash
-# Статус контейнеров
 docker compose ps
+```
 
-# Логи сервисов
+You can also view the logs for each service:
+
+```bash
 docker compose logs frontend
 docker compose logs backend
 docker compose logs nginx-proxy
 ```
 
-Приложение будет доступно по адресу: `https://your-domain.com`
+The application should now be available at `https://your-domain.com`.
 
-## Архитектура развертывания
+## Deployment Architecture
 
 ```
-Интернет → nginx-proxy (SSL) → frontend nginx → backend
+Internet → nginx-proxy (SSL) → frontend nginx → backend
   HTTPS         HTTP              HTTP            HTTP
 ```
 
-### Компоненты:
+- **nginx-proxy**: Handles SSL termination on ports 80/443.
+- **frontend**: The React application served by Nginx on port 3000.
+- **backend**: The FastAPI server running on port 8000.
+- **certbot**: Automatically renews SSL certificates.
 
-- **nginx-proxy**: SSL терминация (порты 80/443)
-- **frontend**: React приложение с nginx (порт 3000)
-- **backend**: FastAPI сервер (порт 8000)
-- **certbot**: Автообновление SSL сертификатов
+## Maintenance
 
-## Обслуживание
-
-### Обновление образов
+### Updating Images
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-### Просмотр логов
+### Viewing Logs
 
 ```bash
 docker compose logs -f [service_name]
 ```
 
-### Перезапуск сервисов
+### Restarting Services
 
 ```bash
 docker compose restart [service_name]
 ```
 
-### Обновление SSL сертификатов
+### Renewing SSL Certificates
 
-Сертификаты обновляются автоматически каждые 12 часов через контейнер certbot.
-
-Принудительное обновление:
+Certificates are renewed automatically. To force a renewal:
 
 ```bash
 docker compose exec certbot certbot renew
 docker compose exec nginx-proxy nginx -s reload
 ```
-
-## Безопасность
-
-- SSL/TLS сертификаты от Let's Encrypt
-- Автоматический редирект HTTP → HTTPS
-- Безопасные заголовки (HSTS, X-Frame-Options)
-- Изолированная Docker сеть
-
-## Мониторинг
-
-### Проверка доступности
-
-```bash
-curl -I https://your-domain.com
-```
-
-### Статус SSL сертификата
-
-```bash
-openssl s_client -connect your-domain.com:443 -servername your-domain.com
-```
-
-## Устранение неисправностей
-
-### Проблемы с SSL
-
-1. Убедитесь, что домен указывает на IP сервера
-2. Проверьте, что порты 80 и 443 открыты
-3. Просмотрите логи certbot: `docker compose logs certbot`
-
-### Проблемы с запуском
-
-1. Проверьте переменные окружения в `.env`
-2. Убедитесь в наличии образов в registry
-3. Просмотрите логи сервисов
-
-### Перезапуск с нуля
-
-```bash
-docker compose down -v
-docker system prune -f
-./setup.sh
-```
-
-## Поддержка
-
-Для получения помощи создайте issue в репозитории GitHub.
