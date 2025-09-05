@@ -57,7 +57,7 @@ if [ ! -f "$CERT_PATH" ]; then
     # Запуск временного nginx для Certbot
     docker run --rm \
       -v $(pwd)/certbot/www:/var/www/certbot \
-      -v $(pwd)/nginx-proxy.conf:/etc/nginx/nginx.conf:ro \
+      -v $(pwd)/nginx-temp.conf:/etc/nginx/nginx.conf:ro \
       nginx:alpine \
       sh -c 'echo "Starting temporary nginx for Certbot..." && nginx -c /etc/nginx/nginx.conf -g "daemon off;"' &
     
