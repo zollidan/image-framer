@@ -19,23 +19,23 @@ if [ -z "$REGISTER_ID" ]; then
     exit 1
 fi
 
-echo "$OAUTHTOKEN"|docker login \
+echo "$OAUTHTOKEN" | docker login \
   --username oauth \
   --password-stdin \
- cr.yandex
+  cr.yandex
 
 echo "Переменные окружения:"
 echo "MY_DOMAIN: $MY_DOMAIN"
 echo "REGISTER_ID: $REGISTER_ID"
 
 # -------- Image framer install ---------
-# Клонирование репозитория 
+# Клонирование репозитория
 if [ -d "image-framer" ]; then
     echo "Директория image-framer уже существует. обновляем её..."
     cd image-framer
     git pull
 else
-    echo "Клонируем репозиторий image-framer..."    
+    echo "Клонируем репозиторий image-framer..."
     git clone https://github.com/zollidan/image-framer.git
     cd image-framer
 fi
@@ -44,45 +44,9 @@ fi
 echo "REGISTER_ID=${REGISTER_ID}" > .env
 echo "DOMAIN=${MY_DOMAIN}" >> .env
 
-# Создание шаблона конфигурации nginx внутри проекта
-cat > nginx-proxy-template.conf << 'EOF'
-server {
-    listen 80;
-    server_name ${MY_DOMAIN};
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-    location / {
-        return 301 https://$server_name$request_uri;
-    }
-}
-server {
-    listen 443 ssl http2;
-    server_name ${MY_DOMAIN};
-    ssl_certificate /etc/letsencrypt/live/${MY_DOMAIN}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${MY_DOMAIN}/privkey.pem;
-    location / {
-        proxy_pass http://frontend:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-EOF
-
-# Проверка наличия docker-compose.yml
-if [ ! -f "docker-compose.yml" ] && [ ! -f "compose.yml" ]; then
-    echo "ОШИБКА: Файл docker-compose.yml или compose.yml не найден!"
-    exit 1
-fi
-
 # Создание директорий для SSL сертификатов
 mkdir -p ./certbot/conf
 mkdir -p ./certbot/www
-
-# Генерация финального nginx конфига
-envsubst '${MY_DOMAIN}' < nginx-proxy-template.conf > nginx-proxy.conf
 
 # -------- Получение SSL сертификата (только если его ещё нет) --------
 CERT_PATH="./certbot/conf/live/${MY_DOMAIN}/fullchain.pem"
@@ -90,12 +54,15 @@ CERT_PATH="./certbot/conf/live/${MY_DOMAIN}/fullchain.pem"
 if [ ! -f "$CERT_PATH" ]; then
     echo "Сертификат не найден, запрашиваем новый..."
     
-    # Запуск временного nginx на 80 порту
-    docker run -d --name temp-nginx \
-      -p 80:80 \
+    # Запуск временного nginx для Certbot
+    docker run --rm \
       -v $(pwd)/certbot/www:/var/www/certbot \
+      -v $(pwd)/nginx-proxy.conf:/etc/nginx/nginx.conf:ro \
       nginx:alpine \
-      sh -c 'echo "server { listen 80; location /.well-known/acme-challenge/ { root /var/www/certbot; } location / { return 301 https://\$server_name\$request_uri; } }" > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"'
+      sh -c 'echo "Starting temporary nginx for Certbot..." && nginx -c /etc/nginx/nginx.conf -g "daemon off;"' &
+    
+    # Ждем, пока временный nginx запустится
+    sleep 5
 
     # Запрос сертификата
     docker run --rm \
@@ -108,9 +75,9 @@ if [ ! -f "$CERT_PATH" ]; then
       --agree-tos \
       --no-eff-email \
       -d ${MY_DOMAIN}
-
-    # Остановка временного nginx
-    docker stop temp-nginx && docker rm temp-nginx
+      
+    # Останавливаем временный nginx
+    pkill nginx
 else
     echo "Сертификат уже существует, пропускаем выдачу."
 fi

@@ -12,11 +12,7 @@ param(
 # Проверка существования файлов установки
 $setupFiles = @(
     "setup.sh",
-    "setup-app.sh",
-    "setup-ssl.sh",
-    "nginx-proxy-template.conf",
-    "nginx-ssl.conf",
-    "docker-compose.yml"
+    "setup-app.sh"
 )
 
 foreach ($file in $setupFiles) {
