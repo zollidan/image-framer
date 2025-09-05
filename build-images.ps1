@@ -29,9 +29,9 @@ param(
 )
 
 if ($Clean) {
-    $composeCmd += " --pull --no-cache"
+    $composeCmd += " --push --no-cache"
 } else {
-    $composeCmd += " --pull"
+    $composeCmd += " --push"
 }
 
 Write-Host "🚀 Запуск сборки: $composeCmd"

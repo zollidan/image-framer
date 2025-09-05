@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     image: cr.yandex/${REGISTER_ID}/image-framer-backend:latest
