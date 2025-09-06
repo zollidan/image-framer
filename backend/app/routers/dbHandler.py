@@ -1,3 +1,9 @@
+"""
+API router for database-related operations.
+
+This module defines the API endpoints for listing processed images
+stored in the database.
+"""
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
@@ -16,6 +22,16 @@ router = APIRouter()
 async def get_db_image_files(
     db: Session = Depends(get_db)
 ):
+    """
+    Retrieve a list of all processed images from the database.
+
+    Args:
+        db (Session): The database session, injected by Depends(get_db).
+
+    Returns:
+        list[ProcessedImage]: A list of processed image records.
+        JSONResponse: An error response if a database error occurs.
+    """
     try:
         files = db.scalars(select(ProcessedImage)).all()
         return files
@@ -25,5 +41,5 @@ async def get_db_image_files(
             content=ErrorResponse(
                 message="Error",
                 details=str(e)
-            )
+            ).model_dump()
         )

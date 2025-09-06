@@ -6,6 +6,14 @@ import { EditWhiteBg } from "@/components/edit-white/edit-white-bg";
 import { EditAddFrameBg } from "@/components/edit-add-framer";
 import { ImageList } from "@/components/image-list";
 
+/**
+ * The main component of the application.
+ *
+ * Renders the header, footer, and a tab-based navigation for different
+ * image editing functionalities.
+ *
+ * @returns {JSX.Element} The rendered App component.
+ */
 function App() {
   return (
     <>

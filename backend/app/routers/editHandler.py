@@ -1,3 +1,9 @@
+"""
+API router for image editing operations.
+
+This module defines endpoints for adding a white background to an image and
+adding a frame to an image.
+"""
 import io
 import uuid
 from pathlib import Path
@@ -23,7 +29,24 @@ def process_add_white_bg(
     file: UploadFile = File(...),
     bg_coefficient: float = 1.3,
 ) -> dict:
-    """Place the uploaded image on a white background and return its URL."""
+    """
+    Places the uploaded image on a white background, saves it to S3,
+    and stores its information in the database.
+
+    Args:
+        db (Session): The database session.
+        file (UploadFile): The image file to process.
+        bg_coefficient (float): The coefficient to determine the size of the
+                                white background relative to the image size.
+
+    Raises:
+        HTTPException: If the image is too large or if an error occurs
+                       during processing.
+
+    Returns:
+        dict: A dictionary containing the original filename and the URL of
+              the processed image.
+    """
     try:
         contents = file.file.read()
         user_image = Image.open(io.BytesIO(contents)).convert("RGBA")
@@ -69,7 +92,23 @@ def process_add_frame(
     file: UploadFile = File(...),
     frame_name: str = "frame.png",
 ) -> dict:
-    """Overlay the uploaded image with a frame and return its URL."""
+    """
+    Overlays the uploaded image with a specified frame, saves it to S3,
+    and stores its information in the database.
+
+    Args:
+        db (Session): The database session.
+        file (UploadFile): The image file to process.
+        frame_name (str): The name of the frame file to apply.
+
+    Raises:
+        HTTPException: If the frame is not found, the image is too large,
+                       or an error occurs during processing.
+
+    Returns:
+        dict: A dictionary containing the original filename and the URL of
+              the processed image.
+    """
     frame_path = Path("frames") / frame_name
     if not frame_path.is_file():
         raise HTTPException(

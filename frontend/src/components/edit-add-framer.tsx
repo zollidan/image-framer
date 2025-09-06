@@ -10,6 +10,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+/**
+ * A component for adding a film-style frame to a photo.
+ *
+ * This component provides a card-based UI with a file input and a submit button
+ * for processing the image. It is currently a work in progress.
+ *
+ * @returns {JSX.Element} The rendered EditAddFrameBg component.
+ */
 export const EditAddFrameBg = () => {
   const handleSubmit = () => {
     console.log("Submit button clicked");

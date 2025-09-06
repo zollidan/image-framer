@@ -2,6 +2,12 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A component that displays a styled input field.
+ *
+ * @param {React.ComponentProps<"input">} props - The props for the component.
+ * @returns {JSX.Element} The rendered Input component.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
