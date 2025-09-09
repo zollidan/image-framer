@@ -33,7 +33,7 @@ COPY --from=frontend-build /frontend/dist /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
 COPY <<'EOF' /etc/nginx/conf.d/default.conf
 server {
-    listen 80;
+    listen 3000;
     server_name localhost;
     
     # Увеличиваем лимит размера запроса для загрузки изображений
@@ -121,6 +121,6 @@ EOF
 # Создание директорий для логов
 RUN mkdir -p /var/log/supervisor
 
-EXPOSE 80
+EXPOSE 3000
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

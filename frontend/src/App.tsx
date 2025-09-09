@@ -25,9 +25,7 @@ function App() {
             <TabsList>
               <TabsTrigger value="white-bg">Белый фон</TabsTrigger>
               <TabsTrigger value="frame">Рамка</TabsTrigger>
-              <TabsTrigger value="files" disabled>
-                Файлы
-              </TabsTrigger>
+              <TabsTrigger value="files">Файлы</TabsTrigger>
               <TabsTrigger value="gallery" disabled>
                 Сетка
               </TabsTrigger>

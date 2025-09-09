@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 import { apiPath } from "@/lib/api";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 /**
  * Represents a processed image record.
@@ -28,6 +37,9 @@ export const ImageList = () => {
   const [data, setData] = useState<Image[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +63,19 @@ export const ImageList = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -67,14 +92,34 @@ export const ImageList = () => {
   }
 
   return (
-    <div>
-      <ul>
-        {data.map((image) => (
-          <li key={image.id}>
-            <a href={apiPath(`/api${image.processed_url}`)}>{image.original_filename}</a>
-          </li>
-        ))}
-      </ul>
+    <div className="mx-auto max-w-xs">
+      <Carousel setApi={setApi} className="w-full max-w-xs">
+        <CarouselContent>
+          {data.map((image) => (
+            <CarouselItem key={image.id}>
+              <Card>
+                <CardContent className="flex aspect-square items-center justify-center p-6">
+                  <div className="text-center">
+                    <img 
+                      src={apiPath(`/api${image.processed_url}`)} 
+                      alt={image.original_filename}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                    <p className="mt-2 text-sm text-muted-foreground">{image.original_filename}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+      {count > 0 && (
+        <div className="text-muted-foreground py-2 text-center text-sm">
+          Image {current} of {count}
+        </div>
+      )}
     </div>
   );
 };
