@@ -50,16 +50,28 @@ server {
     }
     
     # Backend API
-    location /api/ {
+    location ^~ /api/ {
         proxy_pass http://127.0.0.1:8000/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
+
+        proxy_intercept_errors on;
+        error_page 502 503 504 = @backend_fallback;
+
+
+        proxy_buffering off;
+    }
+    
+    # Fallback для случаев, когда backend недоступен
+    location @backend_fallback {
+        return 503 "Backend service temporarily unavailable";
+        add_header Content-Type text/plain;
     }
     
     # Статические файлы с кешированием
@@ -74,8 +86,8 @@ server {
         root /usr/share/nginx/html;
     }
     
-    access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log warn;
+    access_log /var/log/nginx/access.log combined;
+    error_log /var/log/nginx/error.log debug;
 }
 EOF
 
@@ -95,6 +107,8 @@ autorestart=true
 stderr_logfile=/var/log/backend.err.log
 stdout_logfile=/var/log/backend.out.log
 environment=ENV=production
+startretries=3
+startsecs=10
 
 [program:nginx]
 command=nginx -g "daemon off;"
