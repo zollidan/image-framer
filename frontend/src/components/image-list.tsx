@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+import { apiPath } from "@/lib/api";
 
 /**
  * Represents a processed image record.
@@ -31,7 +32,7 @@ export const ImageList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/files/list`);
+        const res = await fetch(apiPath(`/api/files/list`));
 
         if (!res.ok) {
           throw new Error(`HTTP error: Status ${res.status}`);
@@ -70,7 +71,7 @@ export const ImageList = () => {
       <ul>
         {data.map((image) => (
           <li key={image.id}>
-            <a href={image.processed_url}>{image.original_filename}</a>
+            <a href={apiPath(`/api${image.processed_url}`)}>{image.original_filename}</a>
           </li>
         ))}
       </ul>

@@ -13,6 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+import { apiPath } from "@/lib/api";
 
 /**
  * Represents an image with its filename and URL.
@@ -49,7 +50,7 @@ export const EditWhiteBg = () => {
         return;
       }
 
-      if (file.size > 10 * 1024 * 1024) {
+      if (file.size > 40 * 1024 * 1024) {
         setError("Файл слишком большой.");
         return;
       }
@@ -76,7 +77,7 @@ export const EditWhiteBg = () => {
       });
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/edit/add-white-bg/?${params}`,
+        apiPath(`/api/edit/add-white-bg/?${params}`),
         {
           method: "POST",
           headers: {
@@ -122,7 +123,7 @@ export const EditWhiteBg = () => {
             </CardHeader>
             <CardContent>
               <img
-                src={import.meta.env.VITE_API_URL + "/api" + image.url}
+                src={apiPath(`/api${image.url}`)}
                 alt={"Processed image with name: " + image.filename}
                 className="shadow-sm"
               />

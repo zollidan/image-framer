@@ -42,9 +42,17 @@ async def get_file_by_key(file_key: str):
         JSONResponse: An error response if the file cannot be retrieved.
     """
     try:
-        file = s3.get_object_by_key(file_key)
+        obj = s3.get_object_by_key(file_key)
+        # Ensure proper headers for browsers/clients
+        media_type = getattr(obj, 'get', None) and obj.get('ContentType') or 'application/octet-stream'
+        headers = {}
+        try:
+            if obj.get('ContentLength'):
+                headers['Content-Length'] = str(obj['ContentLength'])
+        except Exception:
+            pass
 
-        return StreamingResponse(content=file['Body'])
+        return StreamingResponse(content=obj['Body'], media_type=media_type, headers=headers)
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
