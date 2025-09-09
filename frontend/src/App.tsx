@@ -24,9 +24,7 @@ function App() {
           <Tabs defaultValue="white-bg" className="w-[400px]">
             <TabsList>
               <TabsTrigger value="white-bg">Белый фон</TabsTrigger>
-              <TabsTrigger value="frame" disabled>
-                Рамка
-              </TabsTrigger>
+              <TabsTrigger value="frame">Рамка</TabsTrigger>
               <TabsTrigger value="files" disabled>
                 Файлы
               </TabsTrigger>

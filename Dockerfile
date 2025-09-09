@@ -36,6 +36,9 @@ server {
     listen 80;
     server_name localhost;
     
+    # Увеличиваем лимит размера запроса для загрузки изображений
+    client_max_body_size 50M;
+    
     # Frontend - статические файлы
     location / {
         root /usr/share/nginx/html;

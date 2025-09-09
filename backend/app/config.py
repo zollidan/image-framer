@@ -33,7 +33,7 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "http://localhost:80",
         "http://localhost",
-        "https://zollidan-image-framer-4c80.twc1.net",
+        "https://image-framer-united.onrender.com",
     ]
     S3_PUBLIC_URL: str = "/s3/file"
 

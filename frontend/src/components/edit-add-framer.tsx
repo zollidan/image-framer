@@ -9,51 +9,171 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState } from "react";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 
 /**
- * A component for adding a film-style frame to a photo.
+ * Represents an image with its filename and URL.
  *
- * This component provides a card-based UI with a file input and a submit button
- * for processing the image. It is currently a work in progress.
+ * @property {string} filename - The original filename of the image.
+ * @property {string} url - The URL of the processed image.
+ */
+interface Image {
+  filename: string;
+  url: string;
+}
+
+/**
+ * A component for adding a frame to an image.
+ *
+ * This component provides a UI with a file input, a slider to adjust the
+ * frame parameters, and handles the API call to process the image. It also
+ * displays the processed image or an error message.
  *
  * @returns {JSX.Element} The rendered EditAddFrameBg component.
  */
 export const EditAddFrameBg = () => {
-  const handleSubmit = () => {
-    console.log("Submit button clicked");
+  const [image, setImage] = useState<Image | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Пожалуйста, выберите изображение");
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Файл слишком большой.");
+        return;
+      }
+
+      setSelectedFile(file);
+      setError(null);
+    }
   };
+  
+  const handleSubmit = async () => {
+    if (!selectedFile) {
+      setError("Пожалуйста, выберите файл");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile, selectedFile.name);
+
+      const params = new URLSearchParams({
+        frame_name: "frame.png",
+      });
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/edit/add-frame/?${params}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setImage(data);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Произошла ошибка при обработке изображения"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div>
+    <div className="space-y-2">
+      {error ? (
+        <>
+          <Alert variant="destructive" className="w-full max-w-sm">
+            <AlertCircleIcon />
+            <AlertTitle>{error}</AlertTitle>
+          </Alert>
+        </>
+      ) : null}
       <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Добавление пленочной рамки на фото</CardTitle>
-          <CardDescription>
-            мяу мяу мяу мяу мяу мяу мяу мяу мяу мяу выбор рамки и добавление
-            новой позже
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="file">File</Label>
-                <Input type="file" required />
-              </div>
-            </div>
-            <Button variant="default" disabled className="mt-4">
-              Добавить рамку
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex-col gap-2">
-          <Button
-            type="submit"
-            className="w-full cursor-pointer"
-            onClick={handleSubmit}
-          >
-            Обработать
-          </Button>
-        </CardFooter>
+        {image ? (
+          <>
+            <CardHeader>
+              <CardTitle>Готовое фото</CardTitle>
+              <CardDescription>мяу мяу???</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <img
+                src={import.meta.env.VITE_API_URL + image.url}
+                alt={"Processed image with name: " + image.filename}
+                className="shadow-sm"
+              />
+            </CardContent>
+            <CardFooter className="flex-col space-y-2">
+              <Button variant="secondary" className="w-full cursor-pointer">
+                Сохранить
+              </Button>
+              <Button
+                variant="default"
+                className="w-full cursor-pointer"
+                onClick={() => setImage(null)}
+              >
+                Новое фото
+              </Button>
+            </CardFooter>
+          </>
+        ) : (
+          <>
+            <CardHeader>
+              <CardTitle>Добавление пленочной рамки на фото</CardTitle>
+              <CardDescription>
+                мяу мяу мяу мяу мяу мяу мяу мяу мяу мяу
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form>
+                <div className="flex flex-col gap-6">
+                  <div className="grid gap-2">
+                    <Label htmlFor="file">File</Label>
+                    <Input
+                      id="file"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter className="flex-col gap-2">
+              <Button
+                type="submit"
+                className="w-full cursor-pointer"
+                onClick={handleSubmit}
+              >
+                Обработать
+              </Button>
+            </CardFooter>
+          </>
+        )}
       </Card>
     </div>
   );
