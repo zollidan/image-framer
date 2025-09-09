@@ -3,6 +3,12 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A component that visually or semantically separates content.
+ *
+ * @param {React.ComponentProps<typeof SeparatorPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The rendered Separator component.
+ */
 function Separator({
   className,
   orientation = "horizontal",
