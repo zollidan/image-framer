@@ -76,7 +76,7 @@ export const EditWhiteBg = () => {
       });
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/edit/add-white-bg/?${params}`,
+        `${import.meta.env.VITE_API_URL}/api/edit/add-white-bg/?${params}`,
         {
           method: "POST",
           headers: {
@@ -122,7 +122,7 @@ export const EditWhiteBg = () => {
             </CardHeader>
             <CardContent>
               <img
-                src={import.meta.env.VITE_API_URL + image.url}
+                src={import.meta.env.VITE_API_URL + "/api" + image.url}
                 alt={"Processed image with name: " + image.filename}
                 className="shadow-sm"
               />

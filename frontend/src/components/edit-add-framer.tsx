@@ -56,7 +56,7 @@ export const EditAddFrameBg = () => {
       setError(null);
     }
   };
-  
+
   const handleSubmit = async () => {
     if (!selectedFile) {
       setError("Пожалуйста, выберите файл");
@@ -75,7 +75,7 @@ export const EditAddFrameBg = () => {
       });
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/edit/add-frame/?${params}`,
+        `${import.meta.env.VITE_API_URL}/api/edit/add-frame/?${params}`,
         {
           method: "POST",
           headers: {
@@ -121,7 +121,7 @@ export const EditAddFrameBg = () => {
             </CardHeader>
             <CardContent>
               <img
-                src={import.meta.env.VITE_API_URL + image.url}
+                src={import.meta.env.VITE_API_URL + "/api" + image.url}
                 alt={"Processed image with name: " + image.filename}
                 className="shadow-sm"
               />
