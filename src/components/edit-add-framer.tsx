@@ -13,28 +13,16 @@ import { useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 
-/**
- * Represents an image with its filename and URL.
- *
- * @property {string} filename - The original filename of the image.
- * @property {string} url - The URL of the processed image.
- */
-interface Image {
+interface ImageResult {
   filename: string;
   url: string;
 }
 
-/**
- * A component for adding a frame to an image.
- *
- * This component provides a UI with a file input, a slider to adjust the
- * frame parameters, and handles the API call to process the image. It also
- * displays the processed image or an error message.
- *
- * @returns {JSX.Element} The rendered EditAddFrameBg component.
- */
+// Укажите здесь путь к вашей рамке (должна лежать в папке public)
+const FRAME_SRC = "/frame.png";
+
 export const EditAddFrameBg = () => {
-  const [image, setImage] = useState<Image | null>(null);
+  const [image, setImage] = useState<ImageResult | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,18 +34,23 @@ export const EditAddFrameBg = () => {
         setError("Пожалуйста, выберите изображение");
         return;
       }
-
-      if (file.size > 40 * 1024 * 1024) {
-        setError("Файл слишком большой.");
-        return;
-      }
-
       setSelectedFile(file);
       setError(null);
     }
   };
 
-  const handleSubmit = async () => {
+  // Вспомогательная функция для загрузки картинки в объект Image
+  const loadImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous"; // Важно, если рамка на другом домене
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Не удалось загрузить изображение"));
+      img.src = src;
+    });
+  };
+
+  const handleProcess = async () => {
     if (!selectedFile) {
       setError("Пожалуйста, выберите файл");
       return;
@@ -67,64 +60,100 @@ export const EditAddFrameBg = () => {
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", selectedFile, selectedFile.name);
+      // 1. Читаем файл пользователя
+      const userImageUrl = URL.createObjectURL(selectedFile);
 
-      const params = new URLSearchParams({
-        frame_name: "frame.png",
-      });
+      // 2. Параллельно загружаем фото пользователя и рамку
+      const [userImg, frameImg] = await Promise.all([
+        loadImage(userImageUrl),
+        loadImage(FRAME_SRC), // Загружаем рамку из статики
+      ]);
 
-      const response = await fetch(`/api/edit/add-frame/?${params}`, {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-        },
-        body: formData,
-      });
+      // 3. Создаем Canvas по размеру ОРИГИНАЛЬНОГО фото
+      const canvas = document.createElement("canvas");
+      canvas.width = userImg.width;
+      canvas.height = userImg.height;
 
-      if (!response.ok) {
-        throw new Error(`Ошибка: ${response.statusText}`);
-      }
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Ошибка контекста Canvas");
 
-      const data = await response.json();
-      setImage(data);
+      // 4. Рисуем фото пользователя (фон)
+      ctx.drawImage(userImg, 0, 0);
+
+      // 5. Рисуем рамку поверх
+      // Четвертый и пятый аргументы заставляют рамку растянуться под размер canvas
+
+      // Если у вас JPG рамка с белым фоном, раскомментируйте строку ниже:
+      // ctx.globalCompositeOperation = 'multiply';
+
+      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+
+      // Сбрасываем режим наложения (если меняли)
+      ctx.globalCompositeOperation = "source-over";
+
+      // 6. Конвертируем результат в Blob/URL
+      canvas.toBlob((blob) => {
+        if (!blob) throw new Error("Ошибка создания файла");
+
+        const processedUrl = URL.createObjectURL(blob);
+        setImage({
+          filename: `framed_${selectedFile.name}`,
+          url: processedUrl,
+        });
+
+        // Освобождаем память от старой ссылки
+        URL.revokeObjectURL(userImageUrl);
+        setIsLoading(false);
+      }, selectedFile.type); // Сохраняем исходный формат (jpg/png)
     } catch (err) {
+      console.error(err);
       setError(
-        err instanceof Error
-          ? err.message
-          : "Произошла ошибка при обработке изображения"
+        "Ошибка обработки. Проверьте, что файл рамки '/frame.png' существует в папке public."
       );
-    } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSave = () => {
+    if (image) {
+      const link = document.createElement("a");
+      link.href = image.url;
+      link.download = image.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
   return (
     <div className="space-y-2">
       {error ? (
-        <>
-          <Alert variant="destructive" className="w-full max-w-sm">
-            <AlertCircleIcon />
-            <AlertTitle>{error}</AlertTitle>
-          </Alert>
-        </>
+        <Alert variant="destructive" className="w-full max-w-sm">
+          <AlertCircleIcon className="h-4 w-4" />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
       ) : null}
+
       <Card className="w-full max-w-sm">
         {image ? (
           <>
             <CardHeader>
               <CardTitle>Готовое фото</CardTitle>
-              <CardDescription>мяу мяу???</CardDescription>
+              <CardDescription>Рамка наложена и растянута</CardDescription>
             </CardHeader>
             <CardContent>
               <img
-                src={`/api${image.url}`}
-                alt={"Processed image with name: " + image.filename}
-                className="shadow-sm"
+                src={image.url}
+                alt={image.filename}
+                className="shadow-sm w-full h-auto"
               />
             </CardContent>
             <CardFooter className="flex-col space-y-2">
-              <Button variant="secondary" className="w-full cursor-pointer">
+              <Button
+                variant="secondary"
+                className="w-full cursor-pointer"
+                onClick={handleSave}
+              >
                 Сохранить
               </Button>
               <Button
@@ -139,34 +168,33 @@ export const EditAddFrameBg = () => {
         ) : (
           <>
             <CardHeader>
-              <CardTitle>Добавление пленочной рамки на фото</CardTitle>
+              <CardTitle>Наложение рамки</CardTitle>
               <CardDescription>
-                мяу мяу мяу мяу мяу мяу мяу мяу мяу мяу
+                Рамка автоматически растянется под размер фото
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form>
-                <div className="flex flex-col gap-6">
-                  <div className="grid gap-2">
-                    <Label htmlFor="file">File</Label>
-                    <Input
-                      id="file"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      disabled={isLoading}
-                    />
-                  </div>
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="file">Выберите фото</Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    disabled={isLoading}
+                  />
                 </div>
-              </form>
+              </div>
             </CardContent>
             <CardFooter className="flex-col gap-2">
               <Button
                 type="submit"
                 className="w-full cursor-pointer"
-                onClick={handleSubmit}
+                onClick={handleProcess}
+                disabled={isLoading || !selectedFile}
               >
-                Обработать
+                {isLoading ? "Обработка..." : "Наложить рамку"}
               </Button>
             </CardFooter>
           </>
