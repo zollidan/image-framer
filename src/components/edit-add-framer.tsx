@@ -18,7 +18,6 @@ interface ImageResult {
   url: string;
 }
 
-// Укажите здесь путь к вашей рамке (должна лежать в папке public)
 const FRAME_SRC = "/frame.png";
 
 export const EditAddFrameBg = () => {
@@ -39,7 +38,6 @@ export const EditAddFrameBg = () => {
     }
   };
 
-  // Вспомогательная функция для загрузки картинки в объект Image
   const loadImage = (src: string): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -60,16 +58,13 @@ export const EditAddFrameBg = () => {
     setError(null);
 
     try {
-      // 1. Читаем файл пользователя
       const userImageUrl = URL.createObjectURL(selectedFile);
 
-      // 2. Параллельно загружаем фото пользователя и рамку
       const [userImg, frameImg] = await Promise.all([
         loadImage(userImageUrl),
-        loadImage(FRAME_SRC), // Загружаем рамку из статики
+        loadImage(FRAME_SRC),
       ]);
 
-      // 3. Создаем Canvas по размеру ОРИГИНАЛЬНОГО фото
       const canvas = document.createElement("canvas");
       canvas.width = userImg.width;
       canvas.height = userImg.height;
@@ -77,21 +72,12 @@ export const EditAddFrameBg = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("Ошибка контекста Canvas");
 
-      // 4. Рисуем фото пользователя (фон)
       ctx.drawImage(userImg, 0, 0);
-
-      // 5. Рисуем рамку поверх
-      // Четвертый и пятый аргументы заставляют рамку растянуться под размер canvas
-
-      // Если у вас JPG рамка с белым фоном, раскомментируйте строку ниже:
-      // ctx.globalCompositeOperation = 'multiply';
 
       ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
-      // Сбрасываем режим наложения (если меняли)
       ctx.globalCompositeOperation = "source-over";
 
-      // 6. Конвертируем результат в Blob/URL
       canvas.toBlob((blob) => {
         if (!blob) throw new Error("Ошибка создания файла");
 
@@ -101,10 +87,9 @@ export const EditAddFrameBg = () => {
           url: processedUrl,
         });
 
-        // Освобождаем память от старой ссылки
         URL.revokeObjectURL(userImageUrl);
         setIsLoading(false);
-      }, selectedFile.type); // Сохраняем исходный формат (jpg/png)
+      }, selectedFile.type);
     } catch (err) {
       console.error(err);
       setError(
