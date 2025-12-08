@@ -1,3 +1,5 @@
+import { ModeToggle } from "./mode-toggle";
+
 /**
  * The footer component of the application.
  *
@@ -14,7 +16,7 @@ export const Footer = () => {
         <p className="text-sm">
           <a href="https://github.com/zollidan/image-framer">github</a>
         </p>
-        {/* <ModeToggle></ModeToggle> */}
+        <ModeToggle></ModeToggle>
       </div>
     </footer>
   );
